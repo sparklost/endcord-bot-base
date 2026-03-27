@@ -40,8 +40,13 @@ class Extension:
         if command_text.startswith("bot_register_commands"):
             if not self.commands:
                 return False
-            for command in self.commands:
-                self.app.discord.bot_register_command(command)
+            for num, command in enumerate(self.commands):
+                command_id = self.app.discord.bot_register_command(command)
+                if command_id and command_id is not True:
+                    self.commands[num]["id"] = command_id
+                self.app.update_extra_line(f"Registered {num}/{len(self.commands)}", timed=False)
+                time.sleep(2)   # to not get rate_limited
+            self.app.update_extra_line()
             return True
         return False
 
