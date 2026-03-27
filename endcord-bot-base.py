@@ -26,6 +26,7 @@ class Extension:
         if not self.app.token.startswith("Bot"):
             logger.info("Not running on user accounts!")
             self.run = False
+            del type(self).on_execute_command
             return
 
         extension_dir = os.path.dirname(os.path.abspath(__file__))
@@ -55,8 +56,9 @@ class Extension:
                 if interaction["type"] == 1:   # PING
                     self.app.discord.bot_respond_interaction(1, None, interaction_id, interaction_token)   # PONG
                 elif interaction["type"] == 2:   # APPLICATION_COMMAND
-                    data = {"content": "Pong!"}
-                    self.app.discord.bot_respond_interaction(4, data, interaction_id, interaction_token)   # CHANNEL_MESSAGE_WITH_SOURCE
-
+                    if interaction["data"]["name"] == "ping":
+                        data = {"content": "Pong!"}
+                        self.app.discord.bot_respond_interaction(4, data, interaction_id, interaction_token)   # CHANNEL_MESSAGE_WITH_SOURCE
+                    # elif ...
                 continue
             time.sleep(0.1)
