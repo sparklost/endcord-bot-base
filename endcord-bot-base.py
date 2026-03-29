@@ -34,7 +34,7 @@ class Extension:
         self.commands = utils.load_json("commands.json", dir_path=extension_dir)
 
         self.ui = True
-        if app.config.get("ext_endcord_bot_base_ui", True):
+        if not app.config.get("ext_endcord_bot_base_ui", True):
             if self.ui:
                 self.app.tui.pause_curses()
             else:
