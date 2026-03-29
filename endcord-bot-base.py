@@ -12,6 +12,7 @@ EXT_DESCRIPTION = "Minimal discord bot with iteractions"
 EXT_SOURCE = "https://github.com/sparklost/endcord-bot-base"
 EXT_COMMAND_ASSIST = (
     ("bot_register_commands - register all bot commands from commands.json", "bot_register_commands"),
+    ("bot_toggle_ui - toggle UI drawing", "bot_toggle_ui"),
 )
 logger = logging.getLogger(__name__)
 
@@ -32,6 +33,14 @@ class Extension:
         extension_dir = os.path.dirname(os.path.abspath(__file__))
         self.commands = utils.load_json("commands.json", dir_path=extension_dir)
 
+        self.ui = True
+        if app.config.get("ext_endcord_bot_base_ui", True):
+            if self.ui:
+                self.app.tui.pause_curses()
+            else:
+                self.app.tui.resume_curses()
+            self.ui = not self.ui
+
         threading.Thread(target=self.bot, daemon=True).start()
 
 
@@ -48,6 +57,12 @@ class Extension:
                 time.sleep(2)   # to not get rate_limited
             self.app.update_extra_line()
             return True
+        if command_text.startswith("bot_toggle_ui"):
+            if self.ui:
+                self.app.tui.pause_curses()
+            else:
+                self.app.tui.resume_curses()
+            self.ui = not self.ui
         return False
 
 
